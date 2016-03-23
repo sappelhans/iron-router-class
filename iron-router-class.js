@@ -1,40 +1,84 @@
 Articles = new Meteor.Collection('articles');
 
-Router.route('/', function () {
-  this.layout('Layout');
-  this.render('Blog');
-});
-
-Router.route('/blog/new', function () {
-  this.layout('Layout');
-  this.render('ArticleNew');
+// Global options for all Routes
+Router.configure({
+  layoutTemplate: 'Layout'
 });
 
 
-Router.route('/blog/:_id', function () {
-  //debugger; 
-  console.dir("does this print?"); 
-  console.log('id: ' + this.params._id);
-  console.log('query.q1: ' + this.params.query.q1);
-  console.log('query.q2: ' + this.params.query.q2);
-  console.dir(this.params);
-  this.layout('Layout');
-  this.render('Article');
+// Router.route('/', function () {
+//   this.layout('Layout');
+//   this.render('Blog');
+// }, {name: 'home'});
+
+Router.route('/', {
+  name: 'home',
+  template: 'Blog'
+  //layoutTemplate: 'Layout'
+  // action: function () {
+  //   this.layout('Layout');
+  //   this.render('Blog');
+  // }
 });
+
+Router.route('/blog/new', {
+  name: 'article.new'
+});
+
+// Router.route('/blog/new', function () {
+//   this.layout('Layout');
+//   this.render('ArticleNew');
+// }, {name: 'blog.new'} );
+
+
+Router.route('/blog/:_id', {
+  name: 'article.show',
+  template: 'Article',
+  data: function () {
+    return Articles.findOne({_id: this.params._id})
+  }
+});
+
+// Router.route('/blog/:_id', function () {
+//   //debugger; 
+//   // console.dir("does this print?"); 
+//   // console.log('id: ' + this.params._id);
+//   // console.log('query.q1: ' + this.params.query.q1);
+//   // console.log('query.q2: ' + this.params.query.q2);
+//   // console.dir(this.params);
+//   this.layout('Layout', {
+//     data: function () {
+//       return Articles.findOne({_id: this.params._id});
+//     }
+//   });
+  
+//   this.render('Article', {});
+//   // this.render('ArticleBreadcrumbs', {to: 'breadcrumbs'});
+
+// }, {name: 'article.show'} 
+// );
+
 
 if (Meteor.isClient) {
-  Template.Blog.articles = function () { return Articles.find() };
+  Template.Blog.helpers({ 
+    articles: function () {
+      return Articles.find()
+    } 
+  });
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
     Articles.remove({}); 
+    //if (Articles.find().count() > 0)
+    //  return;
+
     for (var i=0; i<3; i++) {
       Articles.insert({
         title: 'Blog Article ' + i,
-        body: 'This is text body.',
+        body: 'This is text body ' + i,
         createdAt: new Date,
-        author: 'Stevo'
+        author: 'Stevo' + i
       });
     }
 
