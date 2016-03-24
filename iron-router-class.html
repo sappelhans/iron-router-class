@@ -4,16 +4,17 @@
 
 <template name="Layout">
 	<div class="container">
-		<div id="new-article">
-			{{#linkTo route="article.new"}}
-				New Article
-			{{/linkTo}}
-		</div>
 
 		<div>
 			<ul class="breadcrumb">
 				{{> yield "breadcrumbs"}}
 			</ul>
+		</div>
+
+		<div id="new-article">
+			{{#linkTo route="article.new"}}
+				New Article
+			{{/linkTo}}
 		</div>
 
 		<div class="content">
