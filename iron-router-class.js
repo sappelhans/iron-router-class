@@ -60,6 +60,10 @@ Router.route('/blog/:_id', {
 
 
 if (Meteor.isClient) {
+
+  // Move to Route
+  //Meteor.subscribe('articles');
+
   Template.Blog.helpers({ 
     articles: function () {
       return Articles.find()
@@ -68,6 +72,21 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+
+  var Future = Npm.require('fibers/future');
+
+  Meteor.publish('articles', function() {
+    var future = new Future;
+    setTimeout(Meteor.bindEnvironment(function () {
+      future.return(Articles.find());
+    }), 3000);
+    return future.wait();
+  });
+
+  Meteor.publish('article', function (id) {
+    return Articles.find({_id: id});
+  });
+
   Meteor.startup(function () {
     Articles.remove({}); 
     //if (Articles.find().count() > 0)
